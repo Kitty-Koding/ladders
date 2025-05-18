@@ -38,8 +38,22 @@
     <button onclick="filterValidWords()">Check Valid Words</button>
     <div id="doc" class="checkbox-list"></div>
     <div id="results"></div>
-
+    <div id="status"></div>
     <script>
+        var word = "test";
+      var statusDiv = document.getElementById("status");
+
+      fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + word)
+        .then(function (res) {
+          if (!res.ok) throw new Error("Not found");
+          return res.json();
+        })
+        .then(function (data) {
+          statusDiv.innerText = "✅ Valid word";
+        })
+        .catch(function (err) {
+          statusDiv.innerText = "❌ Invalid word";
+        });
         function fi(id) {
             return document.getElementById(id);
         }
