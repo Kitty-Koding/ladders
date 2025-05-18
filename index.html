@@ -61,16 +61,22 @@
         function filterValidWords() {
             var checkboxes = document.getElementsByName('word');
             var resultsDiv = fi('results');
-            resultsDiv.innerHTML = '<p>Checking words, please wait...</p>';
+            var statusDiv = fi('status');
+            resultsDiv.innerHTML = '';
+            statusDiv.innerHTML = 'Starting check...';
+
             var validWords = [];
             var invalidWords = [];
+            var total = checkboxes.length;
             var count = 0;
 
             function checkNext() {
-                if (count >= checkboxes.length) {
+                if (count >= total) {
                     displayResults();
                     return;
                 }
+
+                statusDiv.innerHTML = 'Checking ' + (count + 1) + ' / ' + total;
 
                 var word = checkboxes[count].value.toLowerCase();
                 var xhr = new XMLHttpRequest();
@@ -91,6 +97,7 @@
             }
 
             function displayResults() {
+                statusDiv.innerHTML = 'Done!';
                 var html = '<table><tr><th>Word</th><th>Status</th></tr>';
                 for (var i = 0; i < validWords.length; i++) {
                     html += '<tr><td>' + validWords[i] + '</td><td class="valid">Valid</td></tr>';
