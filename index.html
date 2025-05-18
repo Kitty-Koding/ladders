@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Word Checkboxes</title>
+    <title>Word Validity Checker</title>
     <style>
         .checkbox-list {
             column-count: 3;
@@ -13,11 +13,31 @@
             display: block;
             margin: 2px 0;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .valid {
+            color: green;
+        }
+        .invalid {
+            color: red;
+        }
     </style>
 </head>
 <body>
     <button onclick="filterValidWords()">Check Valid Words</button>
     <div id="doc" class="checkbox-list"></div>
+    <div id="results"></div>
 
     <script>
         function fi(id) {
@@ -40,12 +60,15 @@
 
         function filterValidWords() {
             var checkboxes = document.getElementsByName('word');
+            var resultsDiv = fi('results');
+            resultsDiv.innerHTML = '<p>Checking words, please wait...</p>';
             var validWords = [];
+            var invalidWords = [];
             var count = 0;
 
             function checkNext() {
                 if (count >= checkboxes.length) {
-                    console.log(validWords);
+                    displayResults();
                     return;
                 }
 
@@ -57,6 +80,8 @@
                     if (xhr.readyState === 4) {
                         if (xhr.status === 200) {
                             validWords.push(word);
+                        } else {
+                            invalidWords.push(word);
                         }
                         count++;
                         setTimeout(checkNext, 100); // avoid flooding API
@@ -65,8 +90,21 @@
                 xhr.send();
             }
 
+            function displayResults() {
+                var html = '<table><tr><th>Word</th><th>Status</th></tr>';
+                for (var i = 0; i < validWords.length; i++) {
+                    html += '<tr><td>' + validWords[i] + '</td><td class="valid">Valid</td></tr>';
+                }
+                for (var j = 0; j < invalidWords.length; j++) {
+                    html += '<tr><td>' + invalidWords[j] + '</td><td class="invalid">Invalid</td></tr>';
+                }
+                html += '</table>';
+                resultsDiv.innerHTML = html;
+            }
+
             checkNext();
         }
     </script>
 </body>
 </html>
+
